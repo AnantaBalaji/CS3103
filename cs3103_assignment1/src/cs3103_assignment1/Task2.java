@@ -15,23 +15,29 @@ import java.util.List;
  * @author Clement
  */
 
-// java cmd: cs3103_assignment1.Cs3103_assignment1
+// java cmd: cs3103_assignment1.Task2
 
-public class Cs3103_assignment1 {
+public class Task2 {
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
-        try (BufferedReader fileReader = new BufferedReader(new FileReader("task1_output.txt"))) {
-            System.out.println("Opening file ... Please wait ...");
+        
+        String inputFileName = args[0]; // 2014_task1_output_sample.txt
+        
+         System.out.printf("#Filename: %s\n", inputFileName);
+         
+        
+        try (BufferedReader fileReader = new BufferedReader(new FileReader(inputFileName))) {
+            System.out.println("#Opening file ... Please wait ...\n");
             
             Graph graph = new Graph();
             int linecount = 0;
             
             start:
             while(fileReader.ready()){
-                System.out.println("File is ready to be read!");
+                System.out.println("#File is ready to be read!\n");
 
                 do{
                     String line = fileReader.readLine();
@@ -39,6 +45,11 @@ public class Cs3103_assignment1 {
                     
                     if (line == null){
                         break start;
+                    }
+                    
+                    // skip comments
+                    if (line.charAt(0) == '#'){
+                        continue;
                     }
                     
                     String[] ASes = line.split(" ");
@@ -78,7 +89,7 @@ public class Cs3103_assignment1 {
                     }
                     
                     if (linecount % 100000 == 0){
-                        System.out.printf("Read %d lines\n", linecount);
+                        System.out.printf("#Read %d lines\n", linecount);
                     }
                     
                 }while(true);
