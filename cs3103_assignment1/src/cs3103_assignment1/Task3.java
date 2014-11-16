@@ -272,9 +272,12 @@ public class Task3 {
                                 }
                                 
                                 // check to prevent list outofbound index
-                                if (asPathEdgesRightwardList.size() >= topProviderAsIndex + 1){
+                                if (asPathEdgesRightwardList.size() >= topProviderAsIndex + 1 /*check rightwards*/ 
+                                        && topProviderAsIndex != 0 /*check leftwards*/){
+                                    
                                     Edge e_before = asPathEdgesRightwardList.get(topProviderAsIndex - 1);
                                     Edge e_after = asPathEdgesRightwardList.get(topProviderAsIndex);
+                                    
                                     if(e_before.getType() != S2S && e_after.getType() != S2S){
                                         Vertex v_before = asPathVertexList.get(topProviderAsIndex - 1);
                                         Vertex v_after = asPathVertexList.get(topProviderAsIndex + 1);
@@ -574,7 +577,7 @@ public class Task3 {
                     System.out.printf("%s %s %s\n", v.getName(), e.getDestination().getName(), edgeType);
                 }
             }
-            System.out.printf("s2s count: %d, p2c count: %d, c2p count: %d, p2p count: %d\n", s2s_count, p2c_count, c2p_count, p2p_count);
+            System.out.printf("# s2s count: %d, p2c count: %d, c2p count: %d, p2p count: %d\n", s2s_count, p2c_count, c2p_count, p2p_count);
         }
     }
 }

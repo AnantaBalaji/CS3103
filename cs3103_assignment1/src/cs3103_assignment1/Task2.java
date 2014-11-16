@@ -23,25 +23,30 @@ public class Task2 {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
+
+        if (args.length != 1) {
+            System.out.println("#Please specify one input parameters: <input file>");
+        }
         
-        String inputFileName = args[0]; // 2014_task1_output_sample.txt
+        String inputFileName = args[0];
         
          System.out.printf("#Filename: %s\n", inputFileName);
          
         
         try (BufferedReader fileReader = new BufferedReader(new FileReader(inputFileName))) {
-            System.out.println("#Opening file ... Please wait ...\n");
+            System.out.println("#[Computing the top 10 AS with the highest edge degrees] Opening file ... Please wait ...");
             
             Graph graph = new Graph();
             int linecount = 0;
+            int ASPathTotalLength = 0;
+            
             
             start:
             while(fileReader.ready()){
-                System.out.println("#File is ready to be read!\n");
+                System.out.println("#File is ready to be read!");
 
                 do{
                     String line = fileReader.readLine();
-                    linecount++;
                     
                     if (line == null){
                         break start;
@@ -51,12 +56,15 @@ public class Task2 {
                     if (line.charAt(0) == '#'){
                         continue;
                     }
-                    
+
                     String[] ASes = line.split(" ");
                     
                     if (ASes.length < 2){
                         // something is wrong!
                     }
+                    
+                    linecount++;
+                    ASPathTotalLength += ASes.length;
                     
                     for(int i = 0; i < ASes.length - 1 ; i++){
                         String firstASToken = ASes[i];
@@ -97,11 +105,13 @@ public class Task2 {
             graph.sortVerticesDegreesAsc();
             
             List<Vertex> vertices = graph.getVertices();
+            
             for (int i = vertices.size() - 1; i > vertices.size() - 11; i--){
                 System.out.printf("AS %s has %d degrees\n", vertices.get(i).getName(), vertices.get(i).getEdges().size());
             }
                     
-            // graph.printGraph();
+            System.out.printf("Total length of AS Paths accumulated: %d, Total number of AS Paths:%d, Average path length per AS: %f\n", 
+                    ASPathTotalLength, linecount, ((float)ASPathTotalLength)/linecount);
         }
     }
     
