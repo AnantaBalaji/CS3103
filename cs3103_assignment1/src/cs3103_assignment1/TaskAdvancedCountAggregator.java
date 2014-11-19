@@ -18,7 +18,7 @@ import java.util.Set;
  * @author Clement
  */
 // java cmd: cs3103_assignment1.Task3
-public class Task4 {
+public class TaskAdvancedCountAggregator {
     private static byte S2S = 1;
     private static byte P2C = 2;
     private static byte C2P = 3;
@@ -118,6 +118,10 @@ public class Task4 {
                             Edge e5 = v1.addNeighbour(v2);
                             e5.setType(P2C);
 
+                            // add a transient link C2P in addition to P2C - to capture the number of Providers the Customer has -> more efficient algorithm only
+                            Edge t_e1 = v2.addNeighbour(v1);
+                            t_e1.setType(C2P);
+                            
                             break;
                         case s_C2P: 
                             // 1(C) -> 2(P) , change to
@@ -125,6 +129,10 @@ public class Task4 {
                             Edge e6 = v2.addNeighbour(v1);
                             e6.setType(P2C);
                             
+                            // add a transient link C2P in addition to P2C - to capture the number of Providers the Customer has -> more efficient algorithm only
+                            Edge t_e2 = v1.addNeighbour(v2);
+                            t_e2.setType(C2P);
+
                             break;
                     }
                     
@@ -137,14 +145,23 @@ public class Task4 {
             
             System.out.println("#Finished building directed graph!");
             
-            System.out.println("#[Extracting stubs]");
+            System.out.println("#[Extracting stubs' C2P degrees (identifying the number of providers each customer has)]");
             
             List<Vertex> stubList = getStubs(graph);
             stubCount = stubList.size();
+            
+            ValueCountAccumulator vca = new ValueCountAccumulator();
             for(Vertex v : stubList){
-                if(!uniqueASSet.add(v.getName())){System.out.println("!"+v.getName() + " is a duplicate!");};
-                System.out.printf("%s %s\n", v.getName(), "stub");
+                int c = 0;
+                for(Edge e : v.getEdges()){
+                    if (e.getType() == C2P){
+                        c++;
+                    }
+                }
+                if (c != 0)
+                    vca.incrementValue(c);
             }
+            vca.printValueCount();
             
             // prune graph
             graph.removeVertice(stubList);
@@ -154,8 +171,7 @@ public class Task4 {
             List<Vertex> regionalISPList = getRegionalISPs(graph);
             ispCount = regionalISPList.size();
             for(Vertex v : regionalISPList){
-                if(!uniqueASSet.add(v.getName())){System.out.println("!"+v.getName() + " is a duplicate!");};
-                System.out.printf("%s %s\n", v.getName(), "regional_ISP");
+                //System.out.printf("%s %s\n", v.getName(), "regional_ISP");
             }
             
             // prune graph
@@ -166,8 +182,7 @@ public class Task4 {
             List<Vertex> denseCoresList = getDenseCores(graph);
             denseCoreCount = denseCoresList.size();
             for(Vertex v : denseCoresList){
-                if(!uniqueASSet.add(v.getName())){System.out.println("!"+v.getName() + " is a duplicate!");};
-                System.out.printf("%s %s\n", v.getName(), "dense_core");
+                //System.out.printf("%s %s\n", v.getName(), "dense_core");
             }
             
             // do not prune graph for now
@@ -176,10 +191,19 @@ public class Task4 {
             
             List<Vertex> transitCoresList = getTransitCores(graph, denseCoresList);
             transitCoreCount = transitCoresList.size();
-            for(Vertex v : transitCoresList){
-                if(!uniqueASSet.add(v.getName())){System.out.println("!"+v.getName() + " is a duplicate!");};
-                System.out.printf("%s %s\n", v.getName(), "transit_core");
+            
+            vca = new ValueCountAccumulator();
+            for (Vertex v : transitCoresList) {
+                int c = 0;
+                for (Edge e : v.getEdges()) {
+                    if (e.getType() == S2S || e.getType() == P2P) {
+                        c++;
+                    }
+                }
+                if (c != 0)
+                    vca.incrementValue(c);
             }
+            vca.printValueCount();
             
             System.out.println("#[Extracting outer cores]");
             
@@ -187,7 +211,7 @@ public class Task4 {
             outerCoreCount = outerCoresList.size();
             for(Vertex v : outerCoresList){
                 if(!uniqueASSet.add(v.getName())){System.out.println("!"+v.getName() + " is a duplicate!");};
-                System.out.printf("%s %s\n", v.getName(), "outer_core");
+                //System.out.printf("%s %s\n", v.getName(), "outer_core");
             }
         }
 
@@ -563,6 +587,73 @@ public class Task4 {
                 }
             }
             System.out.printf("# s2s count: %d, p2c count: %d, c2p count: %d, p2p count: %d\n", s2s_count, p2c_count, c2p_count, p2p_count);
+        }
+    }
+    
+    private static class ValueCountAccumulator{
+        private List<ValueCount> valueCountList;
+        
+        public ValueCountAccumulator(){
+            valueCountList = new ArrayList<>();
+        }
+        
+        public void incrementValue(int value){
+            boolean found = false;
+            
+            for(ValueCount vc : valueCountList){
+                if (vc.getValue() == value){
+                    found = true;
+                    vc.setCount(vc.getCount()+1);
+                    return;
+                }
+            }
+            
+            if (!found){
+                ValueCount vc = new ValueCount();
+                vc.setValue(value);
+                vc.setCount(1);
+                valueCountList.add(vc);
+            }
+        }
+        
+        public void printValueCount(){
+            System.out.println("Legend: Value Count");
+            for(ValueCount vc : valueCountList){
+                System.out.printf("%d %d\n", vc.getValue(), vc.getCount());
+            }
+        }
+    }
+    
+    private static class ValueCount{
+        private int value;
+        private int count;
+
+        /**
+         * @return the value
+         */
+        public int getValue() {
+            return value;
+        }
+
+        /**
+         * @param value the value to set
+         */
+        public void setValue(int value) {
+            this.value = value;
+        }
+
+        /**
+         * @return the count
+         */
+        public int getCount() {
+            return count;
+        }
+
+        /**
+         * @param count the count to set
+         */
+        public void setCount(int count) {
+            this.count = count;
         }
     }
 }

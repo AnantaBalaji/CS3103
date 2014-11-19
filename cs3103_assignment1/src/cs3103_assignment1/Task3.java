@@ -68,7 +68,8 @@ public class Task3 {
                     String[] ASes = line.split(" ");
 
                     if (ASes.length < 2) {
-                        // something is wrong!
+                        // something is wrong! skip
+                        continue;
                     }
 
                     for (int i = 0; i < ASes.length - 1; i++) {

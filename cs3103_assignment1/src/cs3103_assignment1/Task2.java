@@ -60,7 +60,8 @@ public class Task2 {
                     String[] ASes = line.split(" ");
                     
                     if (ASes.length < 2){
-                        // something is wrong!
+                        // something is wrong!, skip
+                        continue;
                     }
                     
                     linecount++;
