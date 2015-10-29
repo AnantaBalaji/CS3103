@@ -84,7 +84,7 @@ public class Task1 {
         
         for(String path: as_paths){
            Matcher m = r.matcher(path);
-           if(m.find()){
+           if(!m.find()){
            List<Long> resultlist = tsk.PreprocessPath(path);
            System.out.println(resultlist);
            HashSet<Long> set = new HashSet<Long>(resultlist);
