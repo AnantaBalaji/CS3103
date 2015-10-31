@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,7 +39,7 @@ public class Task1 {
             resultList.add(Long.valueOf(piece));
             }
             catch(java.lang.NumberFormatException e){
-                System.out.println(piece);
+               // System.out.println(piece);
             }
         }
         return resultList;
@@ -86,13 +87,13 @@ public class Task1 {
            Matcher m = r.matcher(path);
            if(!m.find()){
            List<Long> resultlist = tsk.PreprocessPath(path);
-           System.out.println(resultlist);
-           HashSet<Long> set = new HashSet<Long>(resultlist);
+           HashSet<Long> set = new LinkedHashSet<Long>(resultlist);
            resultset_list.add(set);
            }
         }
         
-        System.out.println(resultset_list);
+        LinkedHashSet<List<HashSet<Long>>> result_set = new LinkedHashSet(resultset_list);
+        System.out.println(result_set);
         
         }
         catch(FileNotFoundException e){
