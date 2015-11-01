@@ -1,8 +1,12 @@
 from __future__ import print_function
-import sys, collections
+import sys, collections, re
 
 
 filename = sys.argv[1]
+output = open('output.txt', 'w')
+regex_compile = re.compile(r'{(.*)}')
+global_set = set()
+count = 0
 
 class OrderedSet(collections.Set):
     """
@@ -42,7 +46,6 @@ def _intersection(seq):
         res_seq.append(e)
     return res_seq
 
-import re
 
 def _process_path(as_path, duplicate=False):
     """
@@ -57,13 +60,12 @@ def _process_path(as_path, duplicate=False):
     as_path = as_path.lstrip()
     return as_path
     
-output = open('output.txt', 'w')
-regex_compile = re.compile(r'{(.*)}')
-global_set = set()
+
 
 
 def get_line_data(line):
     """get a line and give appropriate data"""
+    global count
     parser = lambda x: x.split(":")[1] if x != "" else x
     res = regex_compile.search(line)
     if not res:
@@ -73,6 +75,7 @@ def get_line_data(line):
 		str_value = ' '.join(values)
 		if str_value not in global_set:
 			global_set.add(str_value)
+			count = count + len(values)
 			print(str_value, file=output)
 		
 with open(filename, 'r') as f:
@@ -80,5 +83,7 @@ with open(filename, 'r') as f:
 	while line:
 		get_line_data(line)
 		line = f.readline()
+	print("The number of as path is {}".format(str(len(global_set))))
+	print("The number of as's is {}".format(str(count)))
 
 
