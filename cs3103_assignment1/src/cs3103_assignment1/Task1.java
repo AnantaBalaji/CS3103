@@ -5,8 +5,10 @@
  */
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -64,36 +66,45 @@ public class Task1 {
         Task1 tsk = new Task1();
         String file = args[0];
         FileReader reader = new FileReader(file);
+        File output = new File("output.txt");
         BufferedReader filereader = new BufferedReader(reader);
+        FileWriter filewriter = new FileWriter(output);
         
-        List<HashSet<Long>> resultset_list = new ArrayList<HashSet<Long>>();
+        
         
         try{
-        StringBuilder sb = new StringBuilder();
-        String line = filereader.readLine();
-        
-        while (line != null) {
-            sb.append(line);
-            sb.append(System.lineSeparator());
-            line = filereader.readLine();
-        }
-        
-        String everything = sb.toString();
-        String[] as_paths = everything.split("\n");
+        String line = null;
         Pattern r = Pattern.compile("\\{.*}");
         
-        
-        for(String path: as_paths){
-           Matcher m = r.matcher(path);
-           if(!m.find()){
-           List<Long> resultlist = tsk.PreprocessPath(path);
-           HashSet<Long> set = new LinkedHashSet<Long>(resultlist);
-           resultset_list.add(set);
-           }
+        while ((line = filereader.readLine() )!= null) {
+//            sb.append(line);
+//            sb.append(System.lineSeparator());
+//            line = filereader.readLine();
+            Matcher m = r.matcher(line);
+            if(!m.find()){
+            List<Long> resultlist = tsk.PreprocessPath(line);
+            HashSet<Long> set = new LinkedHashSet<Long>(resultlist);
+            System.out.println(set.toString());
+            }
+            
         }
         
-        LinkedHashSet<List<HashSet<Long>>> result_set = new LinkedHashSet(resultset_list);
-        System.out.println(result_set);
+//        String everything = sb.toString();
+//        String[] as_paths = everything.split("\n");
+//        
+//        
+//        
+//        for(String path: as_paths){
+//           Matcher m = r.matcher(path);
+//           if(!m.find()){
+//           List<Long> resultlist = tsk.PreprocessPath(path);
+//           HashSet<Long> set = new LinkedHashSet<Long>(resultlist);
+//           resultset_list.add(set);
+//           }
+//        }
+        
+        //LinkedHashSet<List<HashSet<Long>>> result_set = new LinkedHashSet(resultset_list);
+       // System.out.println(result_set);
         
         }
         catch(FileNotFoundException e){
